@@ -1,0 +1,33 @@
+{
+  "name": "zpl-image-convert",
+  "version": "0.0.1",
+  "description": "Encode images to ZPL format or decode ZPL images",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ReplyTechnologies/zpl-image-convert.git"
+  },
+  "keywords": [
+    "ZPL",
+    "Z64",
+    "ZB64",
+    "LZ77",
+    "ASCII",
+    "HEX",
+    "encode",
+    "decode"
+  ],
+  "author": "Reply Technologies",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/ReplyTechnologies/zpl-image-convert/issues"
+  },
+  "homepage": "https://github.com/ReplyTechnologies/zpl-image-convert#readme",
+  "dependencies": {
+    "jimp": "^0.16.1",
+    "pako": "^2.0.4"
+  }
+}
