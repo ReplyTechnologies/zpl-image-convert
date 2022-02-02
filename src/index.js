@@ -1,15 +1,18 @@
 const Jimp = require('jimp');
 const zlib = require('zlib');
+const LZ77 = require('lz77');
 
 const mapCode = {
+  // normal
   1: "G", 2: "H", 3: "I", 4: "J", 5: "K", 6: "L", 7: "M", 8: "N", 9: "O",
   10: "P", 11: "Q", 12: "R", 13: "S", 14: "T", 15: "U", 16: "V", 17: "W",
   18: "X", 19: "Y", 20: "g", 40: "h", 60: "i", 80: "j", 100: "k", 120: "l",
   140: "m", 160: "n", 180: "o", 200: "p", 220: "q", 240: "r", 260: "s",
-  280: "t", 300: "u", 320: "v", 340: "w", 360: "x", 380: "y", 400: "z"
+  280: "t", 300: "u", 320: "v", 340: "w", 360: "x", 380: "y", 400: "z",
 };
 
 const pivotedMapCode = {
+  // pivoted
   "G": 1, "H": 2, "I": 3, "J": 4, "K": 5, "L": 6, "M": 7, "N": 8, "O": 9,
   "P": 10, "Q": 11, "R": 12, "S": 13, "T": 14, "U": 15, "V": 16, "W": 17,
   "X": 18, "Y": 19, "g": 20, "h": 40, "i": 60, "j": 80, "k": 100, "l": 120,
@@ -81,8 +84,8 @@ async function encode(file, options) {
 
   let image = null;
 
-  if (typeof file == 'buffer') {
-    image = Jimp.read(file);
+  if (typeof file == 'object') {
+    image = await Jimp.read(file);
   } else if (typeof file == 'string') {
     image = await Jimp.read(file);
   } else {
@@ -155,7 +158,7 @@ function convertImageToMonochrome(image, options) {
   }
 
   return {
-    buffer: buffer,
+    buffer: Buffer.from(buffer),
     width: imageWidth,
     height: image.bitmap.height
   };
@@ -254,7 +257,9 @@ function getMapCodeValues(counter) {
 }
 
 function encodeZ64(buffer) {
-  const base64Value = zlib.deflateSync(buffer).toString('base64');
+  //const base64Value = zlib.deflateSync(buffer).toString('base64');
+  const base64Value = LZ77.compress(buffer);
+  console.log(base64Value);
   const crc16Value = calculateCRC(base64Value);
   return `:Z64:${base64Value}:${crc16Value}`;
 }
@@ -399,7 +404,6 @@ function getMapCodeCount(code) {
     const multiplier = Math.pow(20, (code.length - index - 1));
     value += multiplier * pivotedMapCode[code[index]];
   }
-
   return value;
 }
 

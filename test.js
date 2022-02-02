@@ -4,7 +4,7 @@ const Jimp = require('jimp');
 (async () => {
 
   const result = await zplImageConvert.encode('test-image.png', {
-    method: 'ASCII',
+    method: 'Z64',
     // rotation: 0,    
     width: 150,
     height: 150

@@ -27,7 +27,16 @@
   },
   "homepage": "https://github.com/ReplyTechnologies/zpl-image-convert#readme",
   "dependencies": {
+    "assert": "^2.0.0",
+    "browserify-zlib": "^0.2.0",
+    "buffer": "^6.0.3",
     "jimp": "^0.16.1",
-    "pako": "^2.0.4"
+    "lz77": "^1.1.0",
+    "stream-browserify": "^3.0.0",
+    "util": "^0.12.4"
+  },
+  "devDependencies": {
+    "copy-webpack-plugin": "^10.2.4",
+    "webpack": "^5.68.0"
   }
 }
