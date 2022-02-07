@@ -1,6 +1,5 @@
-const Jimp = require('jimp');
+const getPixels = require('get-pixels');
 const zlib = require('zlib');
-const LZ77 = require('lz77');
 
 const mapCode = {
   // normal
@@ -82,25 +81,7 @@ async function encode(file, options) {
     throw new Error(`Method '${options.method}' is not supported (${acceptedMethods.join(', ')})`);
   }
 
-  let image = null;
-
-  if (typeof file == 'object') {
-    image = await Jimp.read(file);
-  } else if (typeof file == 'string') {
-    image = await Jimp.read(file);
-  } else {
-    throw new Error(`Invalid file supplied`);
-  }
-
-  if (options.rotation) {
-    image = await image.rotate(options.rotation);
-  }
-
-  if (options.width || options.height) {
-    image = await image.resize(
-      options.width || Jimp.AUTO,
-      options.height || Jimp.AUTO);
-  }
+  const image = await getImagePixels(file);
 
   const monochromeImage = convertImageToMonochrome(image, options);
 
@@ -115,6 +96,37 @@ async function encode(file, options) {
   }
 
   return `^GFA,${monochromeImage.buffer.length},${monochromeImage.buffer.length},${monochromeImage.width / 8},${data}^FS`;
+}
+
+async function getImagePixels(file) {
+  return new Promise((resolve, reject) => {
+    getPixels(file, (error, pixels) => {
+      if (error) {
+        reject(error);
+      } else {
+        const bitmap = {
+          width: pixels.shape[0],
+          height: pixels.shape[1],
+          channels: pixels.shape[2],
+        };
+
+        const result = {
+          data: pixels.data,
+          getPixelColor: (x, y) => {
+            const index = (y * bitmap.width + x) * bitmap.channels;
+            return {
+              r: pixels.data[index],
+              g: bitmap.channels > 1 ? pixels.data[index + 1] : 0,
+              b: bitmap.channels > 2 ? pixels.data[index + 2] : 0,
+              a: bitmap.channels > 3 ? pixels.data[index + 3] : 0,
+            }
+          },
+          bitmap: bitmap,
+        }
+        resolve(result);
+      }
+    });
+  });
 }
 
 function convertImageToMonochrome(image, options) {
@@ -133,7 +145,8 @@ function convertImageToMonochrome(image, options) {
       let value = 0;
 
       if (x < image.bitmap.width) {
-        const pixel = Jimp.intToRGBA(image.getPixelColor(x, y));
+        //const pixel = Jimp.intToRGBA(image.getPixelColor(x, y));
+        const pixel = image.getPixelColor(x, y);
         const alpha = pixel.a / 255;
 
         const luminanceValue = (
@@ -257,9 +270,7 @@ function getMapCodeValues(counter) {
 }
 
 function encodeZ64(buffer) {
-  //const base64Value = zlib.deflateSync(buffer).toString('base64');
-  const base64Value = LZ77.compress(buffer);
-  console.log(base64Value);
+  const base64Value = zlib.deflateSync(buffer).toString('base64');
   const crc16Value = calculateCRC(base64Value);
   return `:Z64:${base64Value}:${crc16Value}`;
 }
@@ -293,17 +304,17 @@ function decode(text) {
     // trim trailing '^FS'
     text = text.substring(0, text.length - 3);
   }
-  
+
   // a: compression type (A, B, C)
   let commaIndex = text.indexOf(',');
   const a = text.substring(0, commaIndex);
   text = text.substring(commaIndex + 1);
-  
+
   // b: binary byte count
   commaIndex = text.indexOf(',');
   const b = text.substring(0, commaIndex);
   text = text.substring(commaIndex + 1);
-  
+
   // c: graphic field count
   commaIndex = text.indexOf(',');
   const c = text.substring(0, commaIndex);
@@ -312,7 +323,7 @@ function decode(text) {
   // d: bytes per row
   commaIndex = text.indexOf(',');
   const d = text.substring(0, commaIndex);
-  
+
   const data = text.substring(commaIndex + 1);
   let buffer = null;
 
@@ -337,7 +348,7 @@ function decodeZ64(data) {
   data = data.substring(5);
   // trim trailing crc
   data = data.substring(0, data.length - 5);
-  
+
   const deflatedData = Buffer.from(data, 'base64');
   const buffer = zlib.inflateSync(deflatedData);
   return buffer;
@@ -346,7 +357,7 @@ function decodeZ64(data) {
 function decodeASCII(data, size, lineByteCount) {
   const buffer = new Uint8Array(size);
   const lineWordCount = lineByteCount * 2;
-  
+
   // inflate data from map codes
   let inflatedData = '';
   let index = 0;
@@ -373,7 +384,7 @@ function decodeASCII(data, size, lineByteCount) {
   while (index < inflatedData.length) {
     let character = inflatedData[index++];
     let remainingLength = lineWordCount - (expandedData.length % lineWordCount);
-    
+
     if (character == ',') {
       expandedData += new Array(remainingLength + 1).join('0');
     } else if (character == '!') {
