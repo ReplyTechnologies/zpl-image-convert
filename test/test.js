@@ -1,3 +1,5 @@
+const fs = require('fs');
+
 const zplImageConvert = require('../src/index.js');
 
 test('Convert image to Z64 ZPL', async () => {
@@ -34,4 +36,14 @@ test('Convert ASCII ZPL to image', async () => {
   expect(image.width).toBe(152);
   expect(image.height).toBe(150);
   expect(image.buffer.length).toBe(2850);
+});
+
+test('Convert image bytes to Z64 ZPL', async () => {
+  const image = fs.readFileSync('./test/test-image.png');
+  const zpl = await zplImageConvert.encode(image, {
+    method: 'Z64',
+    mimeType: 'image/png',
+  });
+
+  expect(zpl).toBe(`^GFA,2850,2850,19,:Z64:eJzV1j1u2zAUAOBH0xA9GKaBLgrgWM7eQUCHejAsp72IgiwdXXTJEERKUjSb0wMEPQuDDu3QQ6g3UJZCQQ2rj5T4J/UCERBL+CyL7z2RjwF4+QevRZeiuurToU913qeiT92HIe37VP+H8j6JPhV9KvvUiYLXfhS8VHRILIUzRe5PU9oQzA1tSM7VPcxQDoKrIEhuKeVN9DoB/C6WlEci1UTKUBIUsaHb8QjpQGG60HQzGCLtAwg1wQ2RVI1cgi8RZFXs0Ht4VwArN/ZZcArnALQUYEaEk/w1fpYYsaGpiPFzi3mZ8ofNtznNDY2PVLpibtMOuDqdFdQUh3xWpwQmttIf2vPKUtyenXfUhsMdasZmzuTUYzukx84sDVpL7KwbthRZGiGNfZoaMjnKWkriljZ90hd2uZG7dppGli6BqxuPDVG82PoU4J8q3szQWGe+MjSSH7JkS0Oh9q1ZM1P9wMKQqrx8mDC0MFkZSvXPiaGNHtdSM/IA0+gQkW/NJyyRIf0WN1gvTTsdS5RputdJrDN716SJosrssxQNcQZ0SCYkDAVNrMShNlbaJ2aqasi+WnO3nSbm7qxPttHpFXeraOnS3XMtyygv9dq4v67lhHIpl3c0szo0hPM+U3NtpIkhNX1trGk+xMzVCgl0QldyQNX8aANEPoo1rVqVAkvDGxI6IwIDbEWCtX05VTQE9nXL2x4fKwqBPVzO2h4cKsLm9LCO23YrXxBhecF3yXm7UCgOSVdU8Mnxj6ytXiUbQpRHfB7onhxh92U1JHyuk8M0MKK9JF0VdbASrrqUw4FPPAqA7O99GsDt865D9O73t8nMJco5ffCJ1ECXc58OwOKZR9j1GHSohAkJfUqDCXV7Jh6LyaxL8WzJ4MKj8GLbpahKeYc+4ZYIlx49FhDB2hWGu9caEpeiQuDU4e7mnTxhWVfM3byzv/hW/lB388YGzevvUPkUwqMXRfaUb+E0d6NIxKaAVLz1gjgRsNi8caLg1SvccxdnDrE9blDTj9cO0RrpqCYOkXonZxlxk6x/SaIuJT+RDgOvFJVcHIFHpSTvHyCGRaCH1CUiS+W/jhd5/AM00G7b:a5ca^FS`);
 });

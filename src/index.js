@@ -68,6 +68,7 @@ const crcTable = [
 async function encode(file, options) {
   options = options || {};
   options.method = options.method || 'Z64';
+  options.mimeType = options.mimeType || null;
   options.threshold = options.threshold || 0x80;
 
   options.luminance = options.luminance || {
@@ -81,7 +82,15 @@ async function encode(file, options) {
     throw new Error(`Method '${options.method}' is not supported (${acceptedMethods.join(', ')})`);
   }
 
-  const image = await getImagePixels(file);
+  
+  let image = null;
+  if (file.bitmap) {
+    // file origintated from Jimp or already processed into pixels
+    image = file;
+  } else {
+    image = await getImagePixels(file, options);
+  }
+
 
   const monochromeImage = convertImageToMonochrome(image, options);
 
@@ -98,9 +107,9 @@ async function encode(file, options) {
   return `^GFA,${monochromeImage.buffer.length},${monochromeImage.buffer.length},${monochromeImage.width / 8},${data}^FS`;
 }
 
-async function getImagePixels(file) {
+async function getImagePixels(file, options) {
   return new Promise((resolve, reject) => {
-    getPixels(file, (error, pixels) => {
+    getPixels(file, options.mimeType, (error, pixels) => {
       if (error) {
         reject(error);
       } else {
@@ -146,7 +155,17 @@ function convertImageToMonochrome(image, options) {
 
       if (x < image.bitmap.width) {
         //const pixel = Jimp.intToRGBA(image.getPixelColor(x, y));
-        const pixel = image.getPixelColor(x, y);
+        let pixel = image.getPixelColor(x, y);
+        if (typeof pixel == 'number') {
+          // pixel value is a number
+          pixel >>>= 0;
+          pixel = {
+            r: (pixel >> 24) & 0xFF,
+            g: (pixel >> 16) & 0xFF,
+            b: (pixel >> 8) & 0xFF,
+            a: (pixel) & 0xFF,
+          };
+        }
         const alpha = pixel.a / 255;
 
         const luminanceValue = (
