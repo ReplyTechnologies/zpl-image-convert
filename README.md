@@ -117,6 +117,7 @@ const decodeResult = await zplImageConvert.decode(zpl);
 // image.buffer.length = 2850
 
 const outputImage = new Jimp(decodeResult.width, decodeResult.height);
+// set pixel color values on image
 for (let i = 0; i < decodeResult.buffer.length; i++) {
     const currentByte = decodeResult.buffer[i];
     for (let bitIndex = 0; bitIndex < 8; bitIndex++) {
@@ -132,6 +133,23 @@ for (let i = 0; i < decodeResult.buffer.length; i++) {
 }
 outputImage.write('... output file path ...'); 
 ```
+
+If processing power is at your disposal, you may choose to use the code from the example below to get pixel values from the decoded result buffer.
+
+```js
+...
+// set pixel color values on image
+for (let x = 0; x < decodeResult.width; x++) {
+    for (let y = 0; y < decodeResult.height; y++) {
+        const pixelBit = decodeResult.getPixelBit(x, y);
+        const color = pixelBit ? 0x000000FF : 0xFFFFFFFF;
+        outputImage.setPixelColor(color, x, y);
+    }
+}
+...
+```
+
+
 
 ### Preprocessing
 
