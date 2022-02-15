@@ -82,7 +82,7 @@ async function encode(file, options) {
     throw new Error(`Method '${options.method}' is not supported (${acceptedMethods.join(', ')})`);
   }
 
-  
+
   let image = null;
   if (file.bitmap) {
     // file origintated from Jimp or already processed into pixels
@@ -313,14 +313,17 @@ function calculateCRC(input) {
 function decode(text) {
   text = text.trim();
 
-  if (!text.startsWith('^GFA')) {
+  if (!text.startsWith('^GFA') && !text.startsWith('A')) {
     throw new Error('Unsupported encoding')
   }
 
   // trim ^GF
-  text = text.substring(3);
+  if (text.startsWith('^GF')) {
+    text = text.substring(3);
+  }
+
+  // trim trailing '^FS'
   if (text.endsWith('^FS')) {
-    // trim trailing '^FS'
     text = text.substring(0, text.length - 3);
   }
 
@@ -358,7 +361,13 @@ function decode(text) {
   return {
     width,
     height,
-    buffer
+    buffer,
+    getPixelBit: (x, y) => {
+      const byteIndex = y * (width / 8) + ~~(x / 8);
+      const byte = buffer[byteIndex];
+      const bit = (byte >> (7 - (x % 8))) & 0x01;
+      return bit;
+    }
   };
 }
 
