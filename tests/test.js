@@ -3,7 +3,7 @@ const fs = require('fs');
 const zplImageConvert = require('../src/index.js');
 
 test('Convert image to Z64 ZPL', async () => {
-  const zpl = await zplImageConvert.encode('./test/test-image.png', {
+  const zpl = await zplImageConvert.encode('./tests/test-image.png', {
     method: 'Z64',
   });
 
@@ -11,7 +11,7 @@ test('Convert image to Z64 ZPL', async () => {
 });
 
 test('Convert image to ASCII ZPL', async () => {
-  const zpl = await zplImageConvert.encode('./test/test-image.png', {
+  const zpl = await zplImageConvert.encode('./tests/test-image.png', {
     method: 'ASCII',
   });
 
@@ -39,7 +39,7 @@ test('Convert ASCII ZPL to image', async () => {
 });
 
 test('Convert image bytes to Z64 ZPL', async () => {
-  const image = fs.readFileSync('./test/test-image.png');
+  const image = fs.readFileSync('./tests/test-image.png');
   const zpl = await zplImageConvert.encode(image, {
     method: 'Z64',
     mimeType: 'image/png',
