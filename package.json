@@ -22,7 +22,7 @@
   ],
   "author": "Reply Technologies",
   "funding": "https://www.paypal.com/donate/?hosted_button_id=BVBKNU8NHN2UN",
-  "license": "GPL-3.0",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/ReplyTechnologies/zpl-image-convert/issues"
   },
