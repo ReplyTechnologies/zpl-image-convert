@@ -1,6 +1,6 @@
 ## ZPL-IMAGE-CONVERT
 
-![BADGE_NPM_DOWNLOADS](https://img.shields.io/npm/dt/@replytechnologies/zpl-image-convert) ![BADGE_NPM_DOWNLOADS](https://img.shields.io/npm/dw/@replytechnologies/zpl-image-convert) ![BADGE_NPM_VERSION](https://img.shields.io/npm/v/@replytechnologies/zpl-image-convert) ![BADGE_NPM_LICENCE](https://img.shields.io/npm/l/@replytechnologies/zpl-image-convert) [![BADGE_PAYPAL](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/donate/?hosted_button_id=BVBKNU8NHN2UN)
+![BADGE_NPM_DOWNLOADS](https://img.shields.io/npm/dt/@replytechnologies/zpl-image-convert) ![BADGE_NPM_DOWNLOADS](https://img.shields.io/npm/dw/@replytechnologies/zpl-image-convert) ![BADGE_NPM_VERSION](https://img.shields.io/npm/v/@replytechnologies/zpl-image-convert) ![BADGE_NPM_LICENCE](https://img.shields.io/npm/l/@replytechnologies/zpl-image-convert)
 
 Encode and decode ZPL images.
 

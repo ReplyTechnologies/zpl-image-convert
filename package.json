@@ -1,6 +1,6 @@
 {
   "name": "@replytechnologies/zpl-image-convert",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Encode and decode ZPL images",
   "main": "src/index.js",
   "scripts": {
@@ -21,7 +21,6 @@
     "decode"
   ],
   "author": "Reply Technologies",
-  "funding": "https://www.paypal.com/donate/?hosted_button_id=BVBKNU8NHN2UN",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/ReplyTechnologies/zpl-image-convert/issues"
